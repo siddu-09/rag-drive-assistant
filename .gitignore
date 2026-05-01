@@ -1,5 +1,8 @@
 credentials.json
 .env
+data/raw/
+data/*.pkl
+data/*.index
 __pycache__/
 *.py[cod]
 *$py.class

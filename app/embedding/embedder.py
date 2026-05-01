@@ -1,34 +1,71 @@
-"""
-Embedding module – generates vector embeddings for text chunks.
-"""
-
+from sentence_transformers import SentenceTransformer
 from typing import List
 import numpy as np
-from sentence_transformers import SentenceTransformer
 
-from app.config.settings import settings
+from app.config.settings import EMBEDDING_MODEL
 
 
 class Embedder:
-    """Generates embeddings using a SentenceTransformer model."""
-
-    def __init__(self, model_name: str = None):
-        self.model_name = model_name or settings.EMBEDDING_MODEL
-        self.model = SentenceTransformer(self.model_name)
-
-    def embed(self, texts: List[str]) -> np.ndarray:
+    def __init__(self, model_name: str = EMBEDDING_MODEL):
         """
-        Generate embeddings for a list of text chunks.
+        Initialize embedding model
+        """
+        print(f"🔄 Loading embedding model: {model_name}...")
+        self.model = SentenceTransformer(model_name)
+        print("✅ Model loaded successfully!")
+
+    def get_embeddings(self, texts: List[str]) -> np.ndarray:
+        """
+        Convert list of texts into embeddings
 
         Args:
-            texts: List of text strings to embed.
+            texts (List[str]): list of text chunks
 
         Returns:
-            Numpy array of shape (n_texts, embedding_dim).
+            np.ndarray: embeddings matrix
         """
-        embeddings = self.model.encode(texts, show_progress_bar=True)
-        return np.array(embeddings)
+        if not texts:
+            return np.array([])
 
-    def embed_query(self, query: str) -> np.ndarray:
-        """Generate an embedding for a single query string."""
-        return self.model.encode([query])[0]
+        embeddings = self.model.encode(
+            texts,
+            batch_size=32,
+            show_progress_bar=True,
+            convert_to_numpy=True
+        )
+
+        return embeddings
+
+    def embed(self, texts: List[str]) -> np.ndarray:
+        return self.get_embeddings(texts)
+
+    def get_single_embedding(self, text: str) -> np.ndarray:
+        """
+        Convert single text into embedding
+
+        Args:
+            text (str)
+
+        Returns:
+            np.ndarray
+        """
+        return self.model.encode(
+            [text],
+            convert_to_numpy=True
+        )[0]
+
+    def embed_query(self, text: str) -> np.ndarray:
+        return self.get_single_embedding(text)
+
+
+# ✅ Create a global instance (used across project)
+embedder = Embedder()
+
+
+# ✅ Helper functions (for easy import)
+def get_embeddings(texts: List[str]):
+    return embedder.get_embeddings(texts)
+
+
+def get_single_embedding(text: str):
+    return embedder.get_single_embedding(text)

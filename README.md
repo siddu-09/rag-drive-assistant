@@ -1,3 +1,14 @@
+---
+title: RAG Drive Assistant
+emoji: 📄
+colorFrom: blue
+colorTo: green
+sdk: streamlit
+sdk_version: 1.37.1
+app_file: frontend/app.py
+python_version: 3.11
+---
+
 # RAG Drive Assistant
 
 RAG Drive Assistant is a small FastAPI application that syncs documents from Google Drive, converts them into embeddings, stores them in FAISS, and answers questions over the synced content with an OpenAI-compatible chat model.
@@ -121,6 +132,18 @@ Start the FastAPI server:
 ```bash
 uvicorn app.main:app --reload
 ```
+
+## Deploy To Hugging Face Spaces
+
+This repository is configured to run as a Streamlit Space using `frontend/app.py`.
+
+Set these Space secrets before launching:
+
+- `GROQ_API_KEY`
+- `GOOGLE_CREDENTIALS_JSON` or `GOOGLE_CREDENTIALS_PATH`
+- `GDRIVE_FOLDER_ID` if you want a default folder prefilled in the UI
+
+If you keep the service account JSON in a file locally, add it as `credentials.json` in the repo root for development only. The file is ignored by git.
 
 Open the API at:
 
